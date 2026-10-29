@@ -21,10 +21,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Prepare website-only files
+        run: |
+          mkdir public-site
+          cp index.html app.js favicon.svg manifest.webmanifest public-site/
       - name: Upload site files
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: public-site
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
