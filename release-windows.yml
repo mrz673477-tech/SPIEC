@@ -1,0 +1,50 @@
+name: Windows release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Build Windows installer
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: ./installer/build-installer.ps1 -Version ($env:RELEASE_VERSION.TrimStart('v'))
+
+      - name: Build portable package
+        shell: pwsh
+        run: |
+          $portable = 'dist/transparent-spice-portable'
+          New-Item -ItemType Directory -Force -Path $portable | Out-Null
+          Copy-Item 'index.html', 'app.js', 'favicon.svg' -Destination $portable
+          [System.IO.File]::WriteAllText((Join-Path $portable '使用说明.txt'), "解压后双击 index.html 即可运行。无需安装，支持离线使用。`n", [System.Text.UTF8Encoding]::new($false))
+          Compress-Archive -Path "$portable/*" -DestinationPath 'dist/透明SPICE-免安装版.zip' -CompressionLevel Optimal
+
+      - name: Create SHA-256 checksum
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath 'dist/透明SPICE-Setup.exe').Hash.ToLowerInvariant()
+          $portableHash = (Get-FileHash -Algorithm SHA256 -LiteralPath 'dist/透明SPICE-免安装版.zip').Hash.ToLowerInvariant()
+          $checksums = "$hash  透明SPICE-Setup.exe`n$portableHash  透明SPICE-免安装版.zip`n"
+          [System.IO.File]::WriteAllText('dist/SHA256SUMS.txt', $checksums, [System.Text.UTF8Encoding]::new($false))
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = '${{ github.ref_name }}'
+          gh release create $tag 'dist/透明SPICE-免安装版.zip' 'dist/透明SPICE-Setup.exe' 'dist/SHA256SUMS.txt' `
+            --title "透明 SPICE $tag" `
+            --generate-notes

@@ -1,0 +1,24 @@
+name: 功能建议
+description: 提出一个具体的改进建议
+title: "[建议] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+      description: 说明当前操作有什么困难。
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: 期望的改进
+      description: 描述你希望软件如何表现。
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 其他方案
+      description: 如果试过其他操作，也请说明。

@@ -1,0 +1,41 @@
+name: 问题反馈
+description: 报告可复现的软件问题或电路分析错误
+title: "[问题] "
+labels: [bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: 问题描述
+      description: 请简要说明发生了什么。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 提供最短的操作步骤；电路问题请列出元件、参数和连接关系。
+      placeholder: |
+        1. 添加……
+        2. 连接……
+        3. 点击运行分析
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期结果与实际结果
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 系统和浏览器
+      placeholder: Windows 11，Microsoft Edge 版本……
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: 附加信息
+      description: 可附截图或错误信息。请先遮盖私人数据和本地文件路径。
